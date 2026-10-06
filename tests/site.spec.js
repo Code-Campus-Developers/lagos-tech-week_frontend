@@ -15,7 +15,7 @@ test('page is responsive, navigation works and signup succeeds', async ({ page }
   await expect(page.getByRole('heading', { level: 1 })).toContainText('Tech Week');
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   await page.screenshot({ path: testInfo.outputPath('landing-page.png'), fullPage: true });
-  await page.getByRole('link', { name: 'Be the first to know' }).click();
+  await page.getByRole('link', { name: /What’s coming/ }).click();
   await expect(page).toHaveURL(/#updates$/);
   await page.getByLabel('Your email address', { exact: true }).fill(`browser-${testInfo.project.name}@example.com`);
   await page.getByRole('checkbox').check();
@@ -35,4 +35,27 @@ test('failed requests show an error and preserve the email for retry', async ({ 
   await expect(page.getByRole('alert')).toContainText('Temporarily unavailable');
   await expect(page.getByLabel('Your email address', { exact: true })).toHaveValue('retry@example.com');
   await expect(page.getByRole('button', { name: 'Notify me' })).toBeEnabled();
+});
+
+test('empty successful responses show confirmation and a spinner while submitting', async ({ page }) => {
+  let releaseResponse;
+  let signalRequest;
+  const requestIntercepted = new Promise(resolve => { signalRequest = resolve; });
+  await page.route('**/api/subscribe', route => new Promise(resolve => {
+    releaseResponse = async () => {
+      await route.fulfill({ status: 204 });
+      resolve();
+    };
+    signalRequest();
+  }));
+  await page.goto('/');
+  await page.getByLabel('Your email address', { exact: true }).fill('empty-response@example.com');
+  await page.getByRole('checkbox').check();
+  await page.getByRole('button', { name: 'Notify me' }).click();
+  await requestIntercepted;
+  const submitButton = page.getByRole('button', { name: 'Notify me' });
+  await expect(submitButton).toHaveAttribute('aria-busy', 'true');
+  await expect(submitButton.locator('.subscribe-spinner')).toBeVisible();
+  await releaseResponse();
+  await expect(page.getByRole('status')).toContainText('You’re on the list.');
 });

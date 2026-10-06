@@ -1,4 +1,6 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/+$/, '');
 
 function Arrow({ diagonal = false, className = '' }) {
   return <svg className={className} width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d={diagonal ? 'M5 19 19 5M5 5h14v14' : 'M4 12h16m-6-6 6 6-6 6'} /></svg>;
@@ -61,24 +63,7 @@ function CityIllustration() {
       <figure className="city-card" aria-label="An architectural line illustration inspired by Lagos and its cable bridge">
       <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-[.16em]"><span>A city in motion</span><span>NG / LOS</span></div>
       <div className="city-drawing" aria-hidden="true">
-      <svg viewBox="0 0 460 340" className="city-layer city-layer-backdrop" fill="none">
-        <defs><pattern id="city-grid" width="23" height="23" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r=".65" fill="black" /></pattern></defs>
-        <rect x="0" y="0" width="460" height="340" fill="url(#city-grid)" />
-        <circle cx="300" cy="132" r="86" fill="white" stroke="black" strokeWidth="1" />
-        <path d="M27 65h18m-9-9v18m368 43h18m-9-9v18" stroke="black" />
-      </svg>
-      <svg viewBox="0 0 460 340" className="city-layer city-layer-skyline" fill="none">
-        <g stroke="black" strokeWidth="1.2" fill="white"><path d="M12 259v-55h30v55m5 0V174h31v85m6 0v-43h28v43m6 0V158h40v101m-30-101v-12h20v12m223 101V167h32v92m6 0v-59h29v59m6 0v-35h25v35" /><path d="M54 185h17m-17 12h17m-17 12h17m56-37h24m-24 12h24m-24 12h24m-24 12h24m234-27h18m-18 12h18m-18 12h18" /></g>
-      </svg>
-      <svg viewBox="0 0 460 340" className="city-layer city-layer-water" fill="none">
-        <path d="M7 318h102m20 0h37m23 0h65m18 0h151M32 330h39m18 0h114m31 0h66m16 0h132" stroke="black" strokeWidth="1" />
-      </svg>
-      <svg viewBox="0 0 460 340" className="city-layer city-layer-bridge" fill="none">
-        <path d="m18 281 424-37v12L18 293Z" fill="white" stroke="black" strokeWidth="1.5" />
-        <path d="M241 263 263 76h8l19 183M257 125h18M249 201h34" fill="white" stroke="black" strokeWidth="2" />
-        <g stroke="black" strokeWidth="1"><path d="m265 88-207 190m207-178L89 275m176-163L121 273m144-148L153 270m112-131-80 128m80-113-48 110m54-175 151 158m-151-145 123 147m-123-134 95 137m-95-122 68 124m-68-106 41 109" /></g>
-        <path d="m65 289-3 24m120-34-1 21m156-33 4 25m54-30 5 28" stroke="black" strokeWidth="3" />
-      </svg>
+        <img src="/statue.webp" alt="" className="statue-image" />
       </div>
       <figcaption className="flex justify-between border-t border-black pt-4 font-mono text-[10px] uppercase tracking-[.13em]"><span>Rooted in Lagos.</span><span>Connected to what’s next. ↗</span></figcaption>
       </figure>
@@ -87,6 +72,40 @@ function CityIllustration() {
 }
 
 export default function App() {
+  const [email, setEmail] = useState('');
+  const [consent, setConsent] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [signupError, setSignupError] = useState('');
+  const [subscribed, setSubscribed] = useState(false);
+
+  async function submitSubscription(event) {
+    event.preventDefault();
+    setSubmitting(true);
+    setSignupError('');
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/subscribe`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, consent, website: '' }),
+      });
+      const responseBody = await response.text();
+      let result = {};
+      if (responseBody) {
+        try {
+          result = JSON.parse(responseBody);
+        } catch {
+          throw new Error('The signup service returned an unexpected response. Please try again.');
+        }
+      }
+      if (!response.ok) throw new Error(result.error || 'We couldn’t save your email. Please try again.');
+      setSubscribed(true);
+    } catch (error) {
+      setSignupError(error instanceof Error ? error.message : 'We couldn’t save your email. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
   return <>
     <a href="#main" className="skip-link">Skip to content</a>
     <div className="site-shell">
@@ -139,6 +158,28 @@ export default function App() {
                 <p className="mt-3 text-sm leading-6">Dates, programme announcements, and participation details will be shared here as they are confirmed.</p>
               </div>
             </div>
+          </div>
+        </section>
+
+        <section id="subscribe" className="subscribe-section section-grid border-t border-black" aria-labelledby="subscribe-title">
+          <div className="section-label">03 / Stay in the loop</div>
+          <div className="subscribe-content">
+            <span className="mb-5 block font-mono text-[10px] uppercase tracking-[.16em]">Lagos Tech Week announcements</span>
+            <h2 id="subscribe-title" className="section-heading">Subscribe for<br />Updates.</h2>
+            {subscribed ? <div className="subscribe-feedback">
+              <p role="status">You’re on the list.</p>
+              <button type="button" onClick={() => { setSubscribed(false); setEmail(''); setConsent(false); }}>Register another email</button>
+            </div> : <form className="subscribe-form" onSubmit={submitSubscription}>
+              <label className="sr-only" htmlFor="subscribe-email">Your email address</label>
+              <div className="subscribe-form-row">
+                <input id="subscribe-email" name="email" type="email" autoComplete="email" placeholder="Your email address" value={email} onChange={event => setEmail(event.target.value)} required />
+                <button type="submit" aria-busy={submitting} disabled={submitting}>
+                  Notify me {submitting ? <span className="subscribe-spinner" aria-hidden="true" /> : <Arrow />}
+                </button>
+              </div>
+              <label className="subscribe-consent"><input type="checkbox" checked={consent} onChange={event => setConsent(event.target.checked)} required /> <span>I agree to receive Lagos Tech Week updates by email.</span></label>
+              {signupError && <p className="subscribe-error" role="alert">{signupError}</p>}
+            </form>}
           </div>
         </section>
       </main>
