@@ -24,14 +24,15 @@ a, button, summary, input[type="checkbox"] { outline-offset: 5px; }
 .primary-button:hover { opacity: .75; }
 .city-figure { position: relative; margin: 38px 0 0; perspective: 1100px; }
 .city-card-shell { position: relative; animation: city-drifts 16s ease-in-out infinite alternate; transform-origin: center; }
-.city-card { position: relative; padding: 25px 24px 20px; border: 1px solid #000; background: #fff; transform: rotate(-3deg); transform-style: preserve-3d; transition: transform 500ms cubic-bezier(.2,.7,.2,1); }
-.city-card::before { content: ''; position: absolute; inset: -1px; border: 1px solid #000; background: #fff; transform: translate3d(7px, 9px, -12px); pointer-events: none; }
-.city-drawing { position: relative; width: 100%; aspect-ratio: 460 / 340; margin: 22px 0 24px; transform-style: preserve-3d; pointer-events: none; display: flex; align-items: center; justify-content: center; }
+.city-card { position: relative; padding: 25px 24px 20px; border: 2px solid #000; background: linear-gradient(180deg, rgba(255,255,255,.98) 0%, rgba(242,242,242,.98) 100%); transform: rotate(-3deg); transform-style: preserve-3d; transition: transform 500ms cubic-bezier(.2,.7,.2,1); box-shadow: 8px 8px 0 rgba(0,0,0,.05); }
+.city-card::before { content: ''; position: absolute; inset: -1px; border: 1px solid #000; background: rgba(255,255,255,.3); transform: translate3d(8px, 10px, -12px); pointer-events: none; }
+.city-drawing { position: relative; width: 100%; aspect-ratio: 460 / 340; margin: 22px 0 24px; transform-style: preserve-3d; pointer-events: none; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(0,0,0,.25); background: linear-gradient(180deg, rgba(0,0,0,.015), rgba(0,0,0,.025)), repeating-linear-gradient(0deg, rgba(0,0,0,.018) 0, rgba(0,0,0,.018) 1px, transparent 1px, transparent 5px); overflow: hidden; }
+.city-drawing::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 20% 15%, rgba(0,0,0,.08), transparent 35%), linear-gradient(90deg, transparent 0 96%, rgba(0,0,0,.06) 96% 100%), linear-gradient(180deg, transparent 0 96%, rgba(0,0,0,.06) 96% 100%); mix-blend-mode: multiply; opacity: .9; }
 .city-layer { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
 .city-layer-skyline { transform: translateZ(12px); }
 .city-layer-water { transform: translateZ(20px); }
 .city-layer-bridge { transform: translateZ(38px); }
-.statue-image { width: 100%; height: 100%; object-fit: contain; display: block; filter: grayscale(1) contrast(1.1); }
+.statue-image { width: 100%; height: 100%; object-fit: contain; display: block; filter: grayscale(1) contrast(1.25) brightness(1.08) sepia(.14); transform: scale(1.06) rotate(-0.5deg); opacity: .95; }
 @keyframes city-drifts {
   0% { transform: rotate(-1.2deg) translateY(0); }
   50% { transform: rotate(1.4deg) translateY(-2px); }
