@@ -60,10 +60,10 @@ function CityIllustration() {
 
   return <div ref={figureRef} className="city-figure" onPointerMove={tiltToPointer} onPointerLeave={resetTilt} onPointerCancel={resetTilt}>
     <div className="city-card-shell">
-      <figure className="city-card" aria-label="An architectural line illustration inspired by Lagos and its cable bridge">
+      <figure className="city-card" aria-label="Three stylized Lagos monument figures in a monochrome drawing">
       <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-[.16em]"><span>A city in motion</span><span>NG / LOS</span></div>
       <div className="city-drawing" aria-hidden="true">
-        <img src="/statue.webp" alt="" className="statue-image" />
+        <img src="/WhatsApp%20Image%202026-10-10%20at%2013.05.22.jpeg" alt="" className="statue-image" />
       </div>
       <figcaption className="flex justify-between border-t border-black pt-4 font-mono text-[10px] uppercase tracking-[.13em]"><span>Rooted in Lagos.</span><span>Connected to what’s next. ↗</span></figcaption>
       </figure>

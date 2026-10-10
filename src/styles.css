@@ -32,7 +32,7 @@ a, button, summary, input[type="checkbox"] { outline-offset: 5px; }
 .city-layer-skyline { transform: translateZ(12px); }
 .city-layer-water { transform: translateZ(20px); }
 .city-layer-bridge { transform: translateZ(38px); }
-.statue-image { width: 100%; height: 100%; object-fit: contain; display: block; filter: grayscale(1) contrast(1.25) brightness(1.08) sepia(.14); transform: scale(1.06) rotate(-0.5deg); opacity: .95; }
+.statue-image { width: 100%; height: 100%; display: block; object-fit: cover; object-position: center; }
 @keyframes city-drifts {
   0% { transform: rotate(-1.2deg) translateY(0); }
   50% { transform: rotate(1.4deg) translateY(-2px); }
